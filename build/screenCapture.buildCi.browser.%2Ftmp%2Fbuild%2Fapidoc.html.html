@@ -1,0 +1,299 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/guilhermefarias/instagram-api">instagram-api (v1.0.3)</a>
+</h1>
+<h4>New Instagram API 2016 for Node.js</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.instagram-api">module instagram-api</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.instagram-api.instagram-api">
+            function <span class="apidocSignatureSpan"></span>instagram-api
+            <span class="apidocSignatureSpan">(accessToken)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.instagram-api" id="apidoc.module.instagram-api">module instagram-api</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.instagram-api.instagram-api" id="apidoc.element.instagram-api.instagram-api">
+        function <span class="apidocSignatureSpan"></span>instagram-api
+        <span class="apidocSignatureSpan">(accessToken)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">instagram-api = function (accessToken) {
+	var q = require('q');
+	var https = require('https');
+	var query = require('querystring');
+	var host = 'api.instagram.com';
+	var port = 443;
+
+	function call(method, path, params, callback) {
+		var req;
+		var data = null;
+		var options;
+
+		if (!params) {
+			params = {};
+		}
+
+		params.access_token = accessToken;
+
+		options = {
+			host: host,
+			port: port,
+			method: method,
+			path: '/v1' + path + (method === 'GET' || method === 'DELETE' ? '?' + query.stringify(params) : ''),
+			headers: {}
+		};
+
+		if (method !== 'GET' &amp;&amp; method !== 'DELETE') {
+			data = query.stringify(params);
+			options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+			options.headers['Content-Length'] = data.length;
+		}
+
+		req = https.request(options, function(res) {
+			var body = '';
+
+			res.setEncoding('utf8');
+
+			res.on('data', function(chunk) {
+				body += chunk;
+			});
+
+			res.on('end', function() {
+				var result;
+				var limit = parseInt(res.headers['x-ratelimit-limit'], 10) || 0;
+				var remaining = parseInt(res.headers['x-ratelimit-remaining'], 10) || 0;
+
+				try {
+					result = JSON.parse(body);
+				} catch (err) {
+					err.details = body;
+					callback(err);
+					return;
+				}
+
+				callback(null, result, remaining, limit);
+			});
+		});
+
+		req.on('error', function(err) {
+			return callback(err);
+		});
+
+		if (data !== null) {
+			req.write(data);
+		}
+
+		req.end();
+	};
+
+	function requestHandler(deferred) {
+		return function(err, result, remaining, limit) {
+			if (err) {
+				deferred.reject(err);
+				return;
+			}
+
+			if (result &amp;&amp; result.meta &amp;&amp; result.meta.code === 200) {
+				return deferred.resolve({
+					data: result.data,
+					pagination: result.pagination,
+					limit: limit,
+					remaining: remaining
+				});
+			} else if (result &amp;&amp; result.meta) {
+				deferred.reject(result.meta);
+			} else {
+				deferred.reject(result);
+			}
+		}
+	};
+
+	function userSelf() {
+		var deferred = q.defer();
+		var params = {};
+
+		call('GET', '/users/self', params, requestHandler(deferred));
+
+		return deferred.promise;
+	};
+
+	function user(userId) {
+		var deferred = q.defer();
+		var params = {};
+
+		call('GET', '/users/' + userId, params, requestHandler(deferred));
+
+		return deferred.promise;
+	};
+
+	function userSelfMedia(options) {
+		var deferred = q.defer();
+		var params = {
+			count: 50
+		};
+
+		if(options &amp;&amp; options.count){
+			params.count = options.count;
+		}
+
+		if(options &amp;&amp; options.min_id){
+			params.min_id = options.min_id;
+		}
+
+		if(options &amp;&amp; options.max_id){
+			params.max_id = options.max_id;
+		}
+
+		call('GET', '/users/self/media/recent/', params, requestHandler(deferred));
+
+		return deferred.promise;
+	};
+
+	function userMedia(userId, options) {
+		var deferred = q.defer();
+		var params = {
+			count: 50
+		};
+
+		if(options &amp;&amp; options.count){
+			params.count = options.count;
+		}
+
+		if(options &amp;&amp; options.min_id){
+			params.min_id = options.min_id;
+		}
+
+		if(options &amp;&amp; options.max_id){
+			params.max_id = options.max_id;
+		}
+
+		call('GET', '/users/' + userId + '/media/recent/', params, requestHandler(deferred));
+
+		return deferred.promise;
+	};
+
+	function userSelfMediaLiked(options) {
+		var deferred = q.defer();
+		var params = {
+			count: 50
+		};
+
+		if(options &amp;&amp; options.count){
+			params.count = options.count;
+		}
+
+		if(options &amp;&amp; options.max_like_id){
+			params.max_like_id = options.max_like_id;
+		}
+
+		call('GET', '/users/self/media/liked/', params, requestHandler(deferred));
+
+		return deferred.promise;
+	};
+
+	function userSearch(term, options) {
+		var deferred = q.defer();
+		var params = {
+			q: term,
+			count: 50
+		};
+
+		if(options &amp;&amp; options.count){
+			params.count = options.count;
+		}
+
+		call('GET', '/users/search', params, requestHandler(deferred));
+
+		return deferred.promise;
+	};
+
+	function userSelfFollows(options) {
+		var deferred = q.defer();
+		var params = {};
+
+		if(options &amp;&amp; options.cursor){
+			params.cursor = options.cursor;
+		}
+
+		call('GET', '/users/self/follows/', params, requestHandler(deferred));
+
+		return deferred.promise;
+	};
+
+	function userSelfFollowedBy(options) {
+		var deferred = q.defer();
+		var params ...</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
