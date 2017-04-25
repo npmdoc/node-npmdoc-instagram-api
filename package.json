@@ -1,6 +1,6 @@
 {
     "author": "kai zhu <kaizhu256@gmail.com>",
-    "description": "#### api documentation for  [instagram-api (v1.0.3)](https://github.com/guilhermefarias/instagram-api)  [![npm package](https://img.shields.io/npm/v/npmdoc-instagram-api.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-instagram-api) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-instagram-api.svg)](https://travis-ci.org/npmdoc/node-npmdoc-instagram-api)",
+    "description": "#### basic api documentation for  [instagram-api (v1.0.3)](https://github.com/guilhermefarias/instagram-api)  [![npm package](https://img.shields.io/npm/v/npmdoc-instagram-api.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-instagram-api) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-instagram-api.svg)](https://travis-ci.org/npmdoc/node-npmdoc-instagram-api)",
     "devDependencies": {
         "electron-lite": "kaizhu256/node-electron-lite#alpha",
         "utility2": "kaizhu256/node-utility2#alpha"
@@ -34,5 +34,5 @@
         "start": "PORT=${PORT:-8080} utility2 start test.js",
         "test": "(set -e; export PORT=$(utility2 shServerPortRandom); utility2 test test.js)"
     },
-    "version": "2017.4.23"
+    "version": "2017.4.25"
 }

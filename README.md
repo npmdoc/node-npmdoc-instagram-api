@@ -1,6 +1,6 @@
 # npmdoc-instagram-api
 
-#### api documentation for  [instagram-api (v1.0.3)](https://github.com/guilhermefarias/instagram-api)  [![npm package](https://img.shields.io/npm/v/npmdoc-instagram-api.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-instagram-api) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-instagram-api.svg)](https://travis-ci.org/npmdoc/node-npmdoc-instagram-api)
+#### basic api documentation for  [instagram-api (v1.0.3)](https://github.com/guilhermefarias/instagram-api)  [![npm package](https://img.shields.io/npm/v/npmdoc-instagram-api.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-instagram-api) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-instagram-api.svg)](https://travis-ci.org/npmdoc/node-npmdoc-instagram-api)
 
 #### New Instagram API 2016 for Node.js
 
